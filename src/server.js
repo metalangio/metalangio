@@ -24,6 +24,8 @@ app.get("*", (req, res) => {
             <html>
               <head>
                 <title>Hello World</title>
+                <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+                <script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
               </head>
               <body>
                 <div id="main">`

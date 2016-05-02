@@ -1,21 +1,24 @@
 import React from "react"
 import { Link } from 'react-router'
+import InputBar from "./InputBar"
+import Firebase from "firebase"
 
 export default class App extends React.Component {
+
+  writeToFirebase(event) {
+    let firebaseRef = new Firebase("https://word-search-demo.firebaseio.com/");
+
+    console.log("EVENT TARGET VALUE:")
+    console.log(event.target.value)
+
+    return false
+  }
+
   render() {
+
     return (
       <div>
-        <h1>Hello World!</h1>
-        <ul>
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/counter">Counter</Link></li>
-          <li><Link to="/page/0">Page 0</Link></li>
-          <li><Link to="/page/1">Page 1</Link></li>
-          <li><Link to="/page/2">Page 2</Link></li>
-        </ul>
-        <div>
-          {this.props.children}
-        </div>
+        <InputBar writeToFirebase={this.writeToFirebase.bind(this)} />
       </div>
     )
   }
