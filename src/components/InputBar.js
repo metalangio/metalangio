@@ -5,9 +5,9 @@ export default class InputBar extends React.Component {
     return (
       <div>
         <form className="pure-form" onSubmit={this.props.writeToFirebase}>
-            <input type="text" class="pure-input-rounded" />
+            <input type="text" id="inputBar" class="pure-input-rounded" defaultValue="add new word"/>
             <input type="submit" value="Add" class="pure-button" />
-        </form>
+        </form> 
       </div>
     )
   }
