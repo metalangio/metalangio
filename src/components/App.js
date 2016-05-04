@@ -10,28 +10,29 @@ export default class App extends React.Component {
     super(props)
     this.firebaseRef = new Firebase("https://word-search-demo.firebaseio.com/word_search")
     this.state = {
-      listOfWords: [],
+      listOfIdsAndWords: {},
       listOfAnswers: []
     }
 
     this.firebaseRef.on("child_added", (snapshot) => {
-
-      this.state.listOfWords.unshift(snapshot.key())
+      this.state.listOfIdsAndWords[snapshot.val()] = snapshot.key()
       this.setState({
-        listOfWords: this.state.listOfWords
+        listOfIdsAndWords: this.state.listOfIdsAndWords
       })
     })
   }
 
   writeToFirebase(event) {
+    event.preventDefault()
+
     let word = document.getElementById("inputBar").value
     word = word.toUpperCase()
     let word_json = {}
     word_json[word] = ""
 
-    this.firebaseRef.child(word).set("")
-
-    event.preventDefault()
+    this.firebaseRef.once("value", (snapshot) => {
+      this.firebaseRef.child(word).set(snapshot.numChildren() + 1 )
+    })
   }
 
   searchWordTrie(event) {
@@ -79,8 +80,36 @@ export default class App extends React.Component {
       margin: 'auto'
     }
 
-    let listOfWords = this.state.listOfWords.map((word) => <li>{word}</li>)
-    let listOfAnswers = this.state.listOfAnswers.map((word) => <li>{word}</li>)
+    let listOfIds = Object.keys(this.state.listOfIdsAndWords)
+
+    listOfIds.sort()
+
+    let listOfIdsAndWords = listOfIds.map((id) => {
+      let word = this.state.listOfIdsAndWords[id]
+      return(
+        <tr>
+          <td>{id}</td>
+          <td>{word}</td>
+        </tr> 
+      )
+    })
+
+    let WordsAndIds = {}
+    listOfIds.forEach((id) => {
+      let word = this.state.listOfIdsAndWords[id]
+      WordsAndIds[word] = id 
+    })
+
+    let listOfAnswers = this.state.listOfAnswers.map((word) => {
+      let id = WordsAndIds[word]
+      return(
+        <tr>
+          <td>{id}</td>
+          <td>{word}</td>
+        </tr>
+      )
+    })
+
     return (
       <div style={mainDiv}>
         <h2 style={title}>MetaLang phonetics search</h2>
@@ -96,16 +125,34 @@ export default class App extends React.Component {
             <div>
               <h3>Query</h3>
               <SearchBar searchWordTrie={this.searchWordTrie.bind(this)}/>
-              <ul id="listOfAnswers">
-                {listOfAnswers}
-              </ul>
+              <table className="pure-table" id="listOfAnswers" style={{marginTop:'20px'}}>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Words</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {listOfAnswers}
+                </tbody>
+              </table>
+
             </div>
             <div>
               <h3>Database</h3>
               <InputBar writeToFirebase={this.writeToFirebase.bind(this)}/>
-              <ul id="listOfWords">
-                {listOfWords}
-              </ul>
+
+              <table className="pure-table" id="listOfWords" style={{marginTop:'20px'}}>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Words</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {listOfIdsAndWords}
+                </tbody>
+              </table>
             </div>
 
         </div>
