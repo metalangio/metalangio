@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import InputBar from "./InputBar"
 import Firebase from "firebase"
 import SearchBar from "./SearchBar"
+import Axios from "axios"
 
 export default class VideoApp extends React.Component {
   constructor(props) {
@@ -13,18 +14,27 @@ export default class VideoApp extends React.Component {
   }
 
   searchWordTrie(event) {
+    console.log("INSIDEJ")
+    event.preventDefault()
     let query = document.getElementById("searchBar").value
 
     if (query != "") {
       query = query.toUpperCase()
       Axios.get('http://localhost:8080/video_search/' + '?query=' + query)
         .then(response => {
+          console.log("WORKING")
+          console.log(response)
 
           let filteredWords = response.data.filter(wordObj => {
-            return wordObj.cost < 3
+            console.log(1)
+            console.log(wordObj)
+            return wordObj.cost < 5
           }).map(wordObj => {
+            console.log(2)
+            console.log(wordObj)
             return wordObj.wordId
           })
+          console.log(filteredWords)
 
           this.setState({
             listOfAnswers: filteredWords
@@ -32,7 +42,6 @@ export default class VideoApp extends React.Component {
         })
     }
 
-    event.preventDefault()
   }
 
   componentDidMount() {
@@ -41,10 +50,6 @@ export default class VideoApp extends React.Component {
         height: 400,
         videoId: 'Ks-_Mh1QhMc'
     })
-  }
-
-  seek() {
-    this.player.seekTo(60)
   }
 
   render() {
@@ -69,18 +74,29 @@ export default class VideoApp extends React.Component {
       margin: 'auto'
     }
 
+    let answers = this.state.listOfAnswers.map((ans) => {
+      console.log(ans)
+      let onClick = () => {
+        this.player.seekTo(ans)
+      }
+      return (
+        <li onClick={onClick}>{ans}</li>
+      )
+    })
+
     return (
       <div style={mainDiv}>
         <p>MetaLang Video App searches through a video phonetically</p>
         <p>Instructions:</p>
         <p> 1. Search for terms that might be in the video</p>
         <p> 2. Click on one of the returned timestamps</p>
-        <a onClick={this.seek.bind(this)}>Skip to 1 minute</a>
-
         <div style={body}>
           <div id="rightPane">
             <h3>Query</h3>
             <SearchBar searchWordTrie={this.searchWordTrie.bind(this)}/>
+            <ul>
+              {answers}
+            </ul>
           </div>
           <div id="leftPane">
             <div id="video">
