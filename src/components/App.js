@@ -3,29 +3,19 @@ import { Link } from 'react-router'
 import InputBar from "./InputBar"
 import Firebase from "firebase"
 import SearchBar from "./SearchBar"
+import Axios from "axios"
 
 export default class App extends React.Component {
   constructor(props) {
     super(props)
-    this.firebaseRef = new Firebase("https://word-search-demo.firebaseio.com/")
+    this.firebaseRef = new Firebase("https://word-search-demo.firebaseio.com/word_search")
     this.state = {
-      listOfWords: []
+      listOfWords: [],
+      listOfAnswers: []
     }
 
-    // this.firebaseRef.orderByKey().once("value", (snapshot) => {
-    //   // Calling val on snapshot returns
-    //   // a Javascript Object representation of the data
-    //   let initialWords = Object.keys(snapshot.val())
-
-    //   this.setState({
-    //     listOfWords: initialWords
-    //   })
-    // }, function (errorObject) {
-    //   console.log("The read failed: " + errorObject.code);
-    // });
-
     this.firebaseRef.on("child_added", (snapshot) => {
-      console.log("child_added")
+
       this.state.listOfWords.unshift(snapshot.key())
       this.setState({
         listOfWords: this.state.listOfWords
@@ -35,16 +25,35 @@ export default class App extends React.Component {
 
   writeToFirebase(event) {
     let word = document.getElementById("inputBar").value
+    word = word.toUpperCase()
     let word_json = {}
     word_json[word] = ""
-    this.firebaseRef.update(word_json)
+
+    this.firebaseRef.child(word).set("")
+
     event.preventDefault()
   }
 
   searchWordTrie(event) {
-    let word = document.getElementById("searchBar").value
-    console.log("search value")
-    console.log(word)
+    let query = document.getElementById("searchBar").value
+
+    if (query != "") {
+      query = query.toUpperCase()
+      Axios.get('http://localhost:8080/word_search/' + '?query=' + query)
+        .then(response => {
+
+          let filteredWords = response.data.filter(wordObj => {
+            return wordObj.cost < 3
+          }).map(wordObj => {
+            return wordObj.wordId
+          })
+
+          this.setState({
+            listOfAnswers: filteredWords
+          })
+        })
+    }
+
     event.preventDefault()
   }
 
@@ -71,6 +80,7 @@ export default class App extends React.Component {
     }
 
     let listOfWords = this.state.listOfWords.map((word) => <li>{word}</li>)
+    let listOfAnswers = this.state.listOfAnswers.map((word) => <li>{word}</li>)
     return (
       <div style={mainDiv}>
         <h2 style={title}>MetaLang phonetics search</h2>
@@ -83,11 +93,14 @@ export default class App extends React.Component {
           </div>
 
           <div style={body}>
-            <div id="rightPane">
+            <div>
               <h3>Query</h3>
               <SearchBar searchWordTrie={this.searchWordTrie.bind(this)}/>
+              <ul id="listOfAnswers">
+                {listOfAnswers}
+              </ul>
             </div>
-            <div id="leftPane">
+            <div>
               <h3>Database</h3>
               <InputBar writeToFirebase={this.writeToFirebase.bind(this)}/>
               <ul id="listOfWords">
