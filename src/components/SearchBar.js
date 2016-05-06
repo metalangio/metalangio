@@ -5,7 +5,7 @@ export default class SearchBar extends React.Component {
         return (
           <div>
             <form className="pure-form" onSubmit={this.props.searchWordTrie}>
-              <input type="text" id="searchBar" className="pure-input-rounded" style={{marginRight:"10px"}}/>
+              <input type="text" id="searchBar" className="pure-input" style={{marginRight:"10px"}}/>
               <input type="submit" value="Search" className="pure-button" />
             </form>
           </div> 

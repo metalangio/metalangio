@@ -53,15 +53,6 @@ export default class VideoApp extends React.Component {
   }
 
   render() {
-    let mainDiv = {
-      marginTop: '80px',
-      fontFamily: 'Noto Sans'
-    }
-
-    let title = {
-      textAlign:'center',
-      color:'#1E69A6'
-    }
 
     let body = {
       display: 'flex',
@@ -85,20 +76,22 @@ export default class VideoApp extends React.Component {
     })
 
     return (
-      <div style={mainDiv}>
-        <p>MetaLang Video App searches through a video phonetically</p>
-        <p>Instructions:</p>
-        <p> 1. Search for terms that might be in the video</p>
-        <p> 2. Click on one of the returned timestamps</p>
+      <div>
+        <div style={description}>
+          <p>MetaLang Video App searches through a video phonetically</p>
+          <p>Instructions:</p>
+          <p> 1. Search for terms that might be in the video</p>
+          <p> 2. Click on one of the returned timestamps</p>
+        </div>
         <div style={body}>
-          <div id="rightPane">
-            <h3>Query</h3>
+          <div>
+            <h3 style={{marginTop:'0px'}}>Query</h3>
             <SearchBar searchWordTrie={this.searchWordTrie.bind(this)}/>
             <ul>
               {answers}
             </ul>
           </div>
-          <div id="leftPane">
+          <div>
             <div id="video">
             </div>
           </div>

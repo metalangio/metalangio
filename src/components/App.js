@@ -60,13 +60,7 @@ export default class App extends React.Component {
 
   render() {
     let mainDiv = {
-      marginTop: '80px',
       fontFamily: 'Noto Sans'
-    }
-
-    let title = {
-      textAlign:'center',
-      color:'#1E69A6'
     }
 
     let body = {
@@ -112,7 +106,6 @@ export default class App extends React.Component {
 
     return (
       <div style={mainDiv}>
-        <h2 style={title}>MetaLang phonetics search</h2>
           <div style={description}>
             <p>MetaLang is a multi-language phonetic search engine. 
             For example, searching for "Mohammed" will match against "محمد" "Muhammed", "Mahamed", "Mohamed" because all the terms are phonetically the same! </p>
